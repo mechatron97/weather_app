@@ -1,25 +1,29 @@
-import logo from './logo.svg';
+import React from 'react';
+import CitySelector from './Components/CitySelector';
 import './App.css';
+import {Container} from 'react-bootstrap';
+import Fetch from './Hooks/Fetch.js'
+import {API_KEY} from './api/config.js';
+import WeatherList from './Components/WeatherList.js'
 
-function App() {
+const App = () => {
+  // destructure the returned values
+  const {data, error, isLoading, setUrl} = Fetch();
+
+  const getContent = () => {
+    if(error) return <h2>Error: {error}</h2>
+    if(!data && isLoading) return <h2>Loading...</h2>
+    if(!data) return null;
+    return <WeatherList weathers={data.list} />
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container className="App">
+        <CitySelector onSearch={(city) => setUrl(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`)} />
+        
+        {getContent()}
+    </Container>
   );
-}
+};
 
 export default App;
